@@ -21,9 +21,14 @@ package org.apache.hadoop.yarn.api.records.impl.pb;
 
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
+import org.apache.hadoop.yarn.api.records.Gpu;
 import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.proto.YarnProtos.ResourceProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.ResourceProtoOrBuilder;
+import org.apache.hadoop.yarn.proto.YarnProtos.GpuProto;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Private
 @Unstable
@@ -31,7 +36,9 @@ public class ResourcePBImpl extends Resource {
   ResourceProto proto = ResourceProto.getDefaultInstance();
   ResourceProto.Builder builder = null;
   boolean viaProto = false;
-  
+
+  private List<Gpu> gpus = null;
+
   public ResourcePBImpl() {
     builder = ResourceProto.newBuilder();
   }
@@ -53,7 +60,17 @@ public class ResourcePBImpl extends Resource {
     }
     viaProto = false;
   }
-    
+
+  private void initGpus() {
+    ResourceProtoOrBuilder p = viaProto ? proto : builder;
+    if (gpus != null) {
+      return;
+    }
+    gpus = new ArrayList<>();
+    for (GpuProto gpuProto : p.getGpusList()) {
+      gpus.add(convertFromProtoFormat(gpuProto));
+    }
+  }
   
   @Override
   public int getMemory() {
@@ -80,6 +97,20 @@ public class ResourcePBImpl extends Resource {
   }
 
   @Override
+  public List<Gpu> getGpus() {
+    initGpus();
+    return gpus;
+  }
+
+  @Override
+  public void setGpus(List<Gpu> gpus) {
+    if (null == gpus) {
+      builder.clearGpus();
+    }
+    this.gpus = gpus;
+  }
+
+  @Override
   public int compareTo(Resource other) {
     int diff = this.getMemory() - other.getMemory();
     if (diff == 0) {
@@ -87,6 +118,9 @@ public class ResourcePBImpl extends Resource {
     }
     return diff;
   }
-  
+
+  private GpuPBImpl convertFromProtoFormat(GpuProto p) {
+    return new GpuPBImpl(p);
+  }
   
 }  

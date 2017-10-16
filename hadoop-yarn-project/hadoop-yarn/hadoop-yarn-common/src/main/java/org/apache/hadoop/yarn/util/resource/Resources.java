@@ -20,8 +20,11 @@ package org.apache.hadoop.yarn.util.resource;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
+import org.apache.hadoop.yarn.api.records.Gpu;
 import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.util.Records;
+
+import java.util.List;
 
 @InterfaceAudience.LimitedPrivate({"YARN", "MapReduce"})
 @Unstable
@@ -47,6 +50,16 @@ public class Resources {
 
     @Override
     public void setVirtualCores(int cores) {
+      throw new RuntimeException("NONE cannot be modified!");
+    }
+
+    @Override
+    public List<Gpu> getGpus() {
+      return null;
+    }
+
+    @Override
+    public void setGpus(List<Gpu> gpus) {
       throw new RuntimeException("NONE cannot be modified!");
     }
 
@@ -80,6 +93,16 @@ public class Resources {
 
     @Override
     public void setVirtualCores(int cores) {
+      throw new RuntimeException("NONE cannot be modified!");
+    }
+
+    @Override
+    public List<Gpu> getGpus() {
+      return null;
+    }
+
+    @Override
+    public void setGpus(List<Gpu> gpus) {
       throw new RuntimeException("NONE cannot be modified!");
     }
 

@@ -21,8 +21,12 @@ package org.apache.hadoop.yarn.api.records;
 import org.apache.hadoop.classification.InterfaceAudience.Public;
 import org.apache.hadoop.classification.InterfaceStability.Evolving;
 import org.apache.hadoop.classification.InterfaceStability.Stable;
+import org.apache.hadoop.classification.InterfaceStability.Unstable;
 import org.apache.hadoop.yarn.api.ApplicationMasterProtocol;
 import org.apache.hadoop.yarn.util.Records;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p><code>Resource</code> models a set of computer resources in the 
@@ -54,9 +58,16 @@ public abstract class Resource implements Comparable<Resource> {
   @Public
   @Stable
   public static Resource newInstance(int memory, int vCores) {
+    return newInstance(memory, vCores, new ArrayList<Gpu>());
+  }
+
+  @Public
+  @Unstable
+  public static Resource newInstance(int memory, int vCores, List<Gpu> gpus) {
     Resource resource = Records.newRecord(Resource.class);
     resource.setMemory(memory);
     resource.setVirtualCores(vCores);
+    resource.setGpus(gpus);
     return resource;
   }
 
@@ -105,33 +116,28 @@ public abstract class Resource implements Comparable<Resource> {
   @Evolving
   public abstract void setVirtualCores(int vCores);
 
-  @Override
-  public int hashCode() {
-    final int prime = 263167;
-    int result = 3571;
-    result = 939769357 + getMemory(); // prime * result = 939769357 initially
-    result = prime * result + getVirtualCores();
-    return result;
-  }
+  /**
+   * Get <em>list of gpu</em> of the resource.
+   *
+   * GPU is a new computing unit with massive computing cores. It could be used
+   * to accelerate a lot of apps.
+   *
+   * @return <em>the list of gpu </em> of the resource
+   */
+  @Public
+  @Evolving
+  public abstract List<Gpu> getGpus();
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (!(obj instanceof Resource))
-      return false;
-    Resource other = (Resource) obj;
-    if (getMemory() != other.getMemory() || 
-        getVirtualCores() != other.getVirtualCores()) {
-      return false;
-    }
-    return true;
-  }
+  /**
+   * Set <em>list of gpu</em> of the resource.
+   *
+   * GPU is a new computing unit with massive computing cores. It could be used
+   * to accelerate a lot of apps.
+   *
+   * @param gpus <em>the list of gpu </em> of the resource
+   */
+  @Public
+  @Evolving
+  public abstract void setGpus(List<Gpu> gpus);
 
-  @Override
-  public String toString() {
-    return "<memory:" + getMemory() + ", vCores:" + getVirtualCores() + ">";
-  }
 }

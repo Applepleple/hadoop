@@ -25,6 +25,8 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.hadoop.util.Shell;
 
+import java.io.IOException;
+
 /**
  * Plugin to calculate resource information on the system.
  *
@@ -90,6 +92,95 @@ public abstract class ResourceCalculatorPlugin extends Configured {
    * @return CPU usage in %
    */
   public abstract float getCpuUsage();
+
+  /**
+   * Obtain the number of GPUs of the machine.
+   *
+   * @return GPU number
+   */
+  public int getGpuCount() {
+    try {
+      return new Nvml().getGpuList().size();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return 0;
+  }
+
+  /**
+   * Obtain the GPU name by GPU id.
+   *
+   * @param gpuId
+   * @return GPU name
+   */
+  public String getGpuName(int gpuId) {
+    try {
+      return new Nvml().getGpuList().get(gpuId).getName();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /**
+   * Obtain the GPU total memory by GPU id.
+   *
+   * @param gpuId
+   * @return GPU total memory
+   */
+  public int getGpuTotalMemoryInMb(int gpuId) {
+    try {
+      return new Nvml().getGpuList().get(gpuId).getTotalMemoryInMb();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return 0;
+  }
+
+  /**
+   * Obtain the GPU used memory by GPU id.
+   *
+   * @param gpuId
+   * @return GPU used memory
+   */
+  public int getGpuUsedMemoryInMb(int gpuId) {
+    try {
+      return new Nvml().getGpuList().get(gpuId).getUsedMemoryInMb();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return 0;
+  }
+
+  /**
+   * Obtain the GPU free memory by GPU id.
+   *
+   * @param gpuId
+   * @return GPU free memory
+   */
+  public int getGpuFreeMemoryInMb(int gpuId) {
+    try {
+      return new Nvml().getGpuList().get(gpuId).getFreeMemoryInMb();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return 0;
+  }
+
+  /**
+   * Obtain the GPU compute capacity by GPU id.
+   *
+   * @param gpuId
+   * @return GPU computing capacity
+   */
+  public int getGpuUtilization(int gpuId) {
+    try {
+      return new Nvml().getGpuList().get(gpuId).getUtilizationGpu();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return 0;
+  }
 
   /**
    * Create the ResourceCalculatorPlugin from the class name and configure it. If

@@ -49,6 +49,8 @@ public class NodeInfo {
   protected long availMemoryMB;
   protected long usedVirtualCores;
   protected long availableVirtualCores;
+  protected long usedGpuNum;
+  protected long availableGpuNum;
   protected ArrayList<String> nodeLabels = new ArrayList<String>();
 
   public NodeInfo() {
@@ -131,6 +133,10 @@ public class NodeInfo {
   public long getUsedVirtualCores() {
     return this.usedVirtualCores;
   }
+
+  public long getUsedGpuNum() { return this.usedGpuNum; }
+
+  public long getAvailableGpuNum() { return this.availableGpuNum; }
 
   public long getAvailableVirtualCores() {
     return this.availableVirtualCores;

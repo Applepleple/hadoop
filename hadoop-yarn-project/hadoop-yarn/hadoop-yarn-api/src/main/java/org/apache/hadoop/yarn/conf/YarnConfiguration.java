@@ -816,7 +816,11 @@ public class YarnConfiguration extends Configuration {
   public static final String YARN_TRACKING_URL_GENERATOR = 
       YARN_PREFIX + "tracking.url.generator";
 
-  /** Amount of memory in GB that can be allocated for containers.*/
+  /** The number of GPUs that can be allocated for containers.*/
+  public static final String NM_GPU_NUMBER = NM_PREFIX + "resource.gpu-number";
+  public static final int DEFAULT_NM_GPU_NUMBER = 0;
+
+  /** Amount of memory in MB that can be allocated for containers.*/
   public static final String NM_PMEM_MB = NM_PREFIX + "resource.memory-mb";
   public static final int DEFAULT_NM_PMEM_MB = 8 * 1024;
 
@@ -825,7 +829,7 @@ public class YarnConfiguration extends Configuration {
       + "pmem-check-enabled";
   public static final boolean DEFAULT_NM_PMEM_CHECK_ENABLED = true;
 
-  /** Specifies whether physical memory check is enabled. */
+  /** Specifies whether virtual memory check is enabled. */
   public static final String NM_VMEM_CHECK_ENABLED = NM_PREFIX
       + "vmem-check-enabled";
   public static final boolean DEFAULT_NM_VMEM_CHECK_ENABLED = true;
