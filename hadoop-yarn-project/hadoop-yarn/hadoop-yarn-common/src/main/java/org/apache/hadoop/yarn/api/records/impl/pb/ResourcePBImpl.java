@@ -60,17 +60,6 @@ public class ResourcePBImpl extends Resource {
     }
     viaProto = false;
   }
-
-  private void initGpus() {
-    ResourceProtoOrBuilder p = viaProto ? proto : builder;
-    if (gpus != null) {
-      return;
-    }
-    gpus = new ArrayList<>();
-    for (GpuProto gpuProto : p.getGpusList()) {
-      gpus.add(convertFromProtoFormat(gpuProto));
-    }
-  }
   
   @Override
   public int getMemory() {
@@ -97,17 +86,15 @@ public class ResourcePBImpl extends Resource {
   }
 
   @Override
-  public List<Gpu> getGpus() {
-    initGpus();
-    return gpus;
+  public int getGpus() {
+    ResourceProtoOrBuilder p = viaProto ? proto : builder;
+    return (p.getGpus());
   }
 
   @Override
-  public void setGpus(List<Gpu> gpus) {
-    if (null == gpus) {
-      builder.clearGpus();
-    }
-    this.gpus = gpus;
+  public void setGpus(int gpus) {
+    maybeInitBuilder();
+    builder.setGpus((gpus));
   }
 
   @Override

@@ -65,7 +65,7 @@ import org.apache.hadoop.yarn.server.nodemanager.containermanager.ContainerManag
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.application.ApplicationState;
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.container.Container;
 import org.apache.hadoop.yarn.server.nodemanager.metrics.NodeManagerMetrics;
-import org.apache.hadoop.yarn.util.Records;
+import org.apache.hadoop.yarn.util.Nvml;
 import org.apache.hadoop.yarn.util.YarnVersionInfo;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -148,14 +148,14 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
         conf.getInt(
             YarnConfiguration.NM_GPU_NUMBER, YarnConfiguration.DEFAULT_NM_GPU_NUMBER);
 
-    List<Gpu> gpuList = new ArrayList<>();
-    for (int i = 0; i < gpuNum; i++) {
-      Gpu gpu = Gpu.newInstance(i, null, 0,
-          0, 0, 0);
-      gpuList.add(gpu);
+    int totalGpuNum = new Nvml().getGpuList().size();
+    if (totalGpuNum < gpuNum) {
+      String message = "Invalid configuration for " +
+          YarnConfiguration.NM_GPU_NUMBER + " The total gpu num is " + totalGpuNum;
+      LOG.error(message);
+      throw new YarnException(message);
     }
-
-    this.totalResource = Resource.newInstance(memoryMb, virtualCores, gpuList);
+    this.totalResource = Resource.newInstance(memoryMb, virtualCores, gpuNum);
     metrics.addResource(totalResource);
     this.tokenKeepAliveEnabled = isTokenKeepAliveEnabled(conf);
     this.tokenRemovalDelayMs =
@@ -204,7 +204,7 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
       super.serviceStart();
       startStatusUpdater();
     } catch (Exception e) {
-      String errorMessage = "Unexpected error starting NodeStatusUpdater";
+      String errorMessage = "Unexpected error starting NodeStatusUpdatertotal";
       LOG.error(errorMessage, e);
       throw new YarnRuntimeException(e);
     }

@@ -149,7 +149,9 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
     }
     return false; 
   }
-  
+
+  // This table records all the remote resource request
+  // information in the following format.
   //Key -> Priority
   //Value -> Map
   //Key->ResourceName (e.g., nodename, rackname, *)
@@ -244,6 +246,8 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
     
     try {
       synchronized (this) {
+        // All the resource requests have been cached in <code>ask</code>
+        // when users called <code>addContainerRequest</code>
         askList = new ArrayList<ResourceRequest>(ask.size());
         for(ResourceRequest r : ask) {
           // create a copy of ResourceRequest as we might change it while the 
@@ -665,7 +669,8 @@ public class AMRMClientImpl<T extends ContainerRequest> extends AMRMClient<T> {
               relaxLocality);
       reqMap.put(capability, resourceRequestInfo);
     }
-    
+
+    // TODO Lei why increase the number of containers needed ?
     resourceRequestInfo.remoteRequest.setNumContainers(
          resourceRequestInfo.remoteRequest.getNumContainers() + 1);
 

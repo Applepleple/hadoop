@@ -23,7 +23,7 @@ public class Nvml extends Shell {
 
   private static final String COMMA = org.apache.hadoop.util.StringUtils.COMMA_STR;
 
-  private static final String QUERY_OPTION_ID = "id";
+  private static final String QUERY_OPTION_ID = "index";
   private static final String QUERY_OPTION_NAME = "name";
   private static final String QUERY_OPTION_UTILIZATION_GPU = "utilization.gpu";
   private static final String QUERY_OPTION_MEMORY_TOTAL = "memory.total";
@@ -48,6 +48,11 @@ public class Nvml extends Shell {
 
   @Override
   protected String[] getExecString() {
+    LOG.debug("Run command : " + NVIDIA_SMI +
+        " --query-gpu=" + QUERY_OPTION_ID + COMMA + QUERY_OPTION_NAME + COMMA +
+            QUERY_OPTION_UTILIZATION_GPU + COMMA + QUERY_OPTION_MEMORY_TOTAL + COMMA +
+            QUERY_OPTION_MEMORY_USED + COMMA + QUERY_OPTION_MEMORY_FREE +
+        " --format=" + FORMAT_OPTION_CSV + COMMA + FORMAT_OPTION_NOUNITS);
     return new String[]{ NVIDIA_SMI,
         "--query-gpu=" + QUERY_OPTION_ID + COMMA + QUERY_OPTION_NAME + COMMA +
         QUERY_OPTION_UTILIZATION_GPU + COMMA + QUERY_OPTION_MEMORY_TOTAL + COMMA +
@@ -74,7 +79,8 @@ public class Nvml extends Shell {
     }
 
     try {
-      while ((line = lines.readLine()) != null) {
+      while (!StringUtils.isEmpty(line = lines.readLine())) {
+        LOG.debug("Nvml output: " + line);
         String[] infos = line.split(COMMA);
         Gpu gpu = Gpu.newInstance(Integer.parseInt(infos[0].trim()), infos[1].trim(),
             Integer.parseInt(infos[2].trim()), Integer.parseInt(infos[3].trim()),

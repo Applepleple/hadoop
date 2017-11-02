@@ -58,12 +58,12 @@ public abstract class Resource implements Comparable<Resource> {
   @Public
   @Stable
   public static Resource newInstance(int memory, int vCores) {
-    return newInstance(memory, vCores, new ArrayList<Gpu>());
+    return newInstance(memory, vCores, 0);
   }
 
   @Public
   @Unstable
-  public static Resource newInstance(int memory, int vCores, List<Gpu> gpus) {
+  public static Resource newInstance(int memory, int vCores, int gpus) {
     Resource resource = Records.newRecord(Resource.class);
     resource.setMemory(memory);
     resource.setVirtualCores(vCores);
@@ -117,27 +117,27 @@ public abstract class Resource implements Comparable<Resource> {
   public abstract void setVirtualCores(int vCores);
 
   /**
-   * Get <em>list of gpu</em> of the resource.
+   * Get <em>the number of gpu</em> of the resource.
    *
    * GPU is a new computing unit with massive computing cores. It could be used
    * to accelerate a lot of apps.
    *
-   * @return <em>the list of gpu </em> of the resource
+   * @return <em>the number of gpu </em> of the resource
    */
   @Public
   @Evolving
-  public abstract List<Gpu> getGpus();
+  public abstract int getGpus();
 
   /**
-   * Set <em>list of gpu</em> of the resource.
+   * Set <em>the number of gpu</em> of the resource.
    *
    * GPU is a new computing unit with massive computing cores. It could be used
    * to accelerate a lot of apps.
    *
-   * @param gpus <em>the list of gpu </em> of the resource
+   * @param gpus <em>the number of gpu </em> of the resource
    */
   @Public
   @Evolving
-  public abstract void setGpus(List<Gpu> gpus);
+  public abstract void setGpus(int gpus);
 
 }

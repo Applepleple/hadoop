@@ -89,6 +89,7 @@ public abstract class AbstractYarnScheduler
   private Resource configuredMaximumAllocation;
   private int maxNodeMemory = -1;
   private int maxNodeVCores = -1;
+  private int maxNodeGpus = -1;
   private final ReadLock maxAllocReadLock;
   private final WriteLock maxAllocWriteLock;
 
@@ -615,6 +616,12 @@ public abstract class AbstractYarnScheduler
           maximumAllocation.setVirtualCores(Math.min(
               configuredMaximumAllocation.getVirtualCores(), maxNodeVCores));
         }
+        int nodeGpus = totalResource.getGpus();
+        if (nodeGpus > maxNodeGpus) {
+          maxNodeGpus = nodeGpus;
+          maximumAllocation.setGpus(Math.min(
+              configuredMaximumAllocation.getGpus(), maxNodeGpus));
+        }
       } else {  // removed node
         if (maxNodeMemory == totalResource.getMemory()) {
           maxNodeMemory = -1;
@@ -622,9 +629,12 @@ public abstract class AbstractYarnScheduler
         if (maxNodeVCores == totalResource.getVirtualCores()) {
           maxNodeVCores = -1;
         }
+        if (maxNodeGpus == totalResource.getGpus()) {
+          maxNodeGpus = -1;
+        }
         // We only have to iterate through the nodes if the current max memory
         // or vcores was equal to the removed node's
-        if (maxNodeMemory == -1 || maxNodeVCores == -1) {
+        if (maxNodeMemory == -1 || maxNodeVCores == -1 || maxNodeGpus == -1) {
           for (Map.Entry<NodeId, N> nodeEntry : nodes.entrySet()) {
             int nodeMemory =
                 nodeEntry.getValue().getTotalResource().getMemory();
@@ -635,6 +645,11 @@ public abstract class AbstractYarnScheduler
                 nodeEntry.getValue().getTotalResource().getVirtualCores();
             if (nodeVCores > maxNodeVCores) {
               maxNodeVCores = nodeVCores;
+            }
+            int nodeGpus =
+                nodeEntry.getValue().getTotalResource().getGpus();
+            if (nodeGpus > maxNodeGpus) {
+              maxNodeGpus = nodeGpus;
             }
           }
           if (maxNodeMemory == -1) {  // no nodes
@@ -648,6 +663,12 @@ public abstract class AbstractYarnScheduler
           } else {
             maximumAllocation.setVirtualCores(
                 Math.min(configuredMaximumAllocation.getVirtualCores(), maxNodeVCores));
+          }
+          if (maxNodeGpus == -1) {  // no nodes
+            maximumAllocation.setGpus(configuredMaximumAllocation.getGpus());
+          } else {
+            maximumAllocation.setGpus(
+                Math.min(configuredMaximumAllocation.getGpus(), maxNodeGpus));
           }
         }
       }

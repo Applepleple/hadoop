@@ -54,12 +54,12 @@ public class Resources {
     }
 
     @Override
-    public List<Gpu> getGpus() {
-      return null;
+    public int getGpus() {
+      return 0;
     }
 
     @Override
-    public void setGpus(List<Gpu> gpus) {
+    public void setGpus(int gpus) {
       throw new RuntimeException("NONE cannot be modified!");
     }
 
@@ -97,12 +97,12 @@ public class Resources {
     }
 
     @Override
-    public List<Gpu> getGpus() {
-      return null;
+    public int getGpus() {
+      return Integer.MAX_VALUE;
     }
 
     @Override
-    public void setGpus(List<Gpu> gpus) {
+    public void setGpus(int gpus) {
       throw new RuntimeException("NONE cannot be modified!");
     }
 
@@ -122,9 +122,14 @@ public class Resources {
   }
 
   public static Resource createResource(int memory, int cores) {
+    return createResource(memory, cores, 0);
+  }
+
+  public static Resource createResource(int memory, int cores, int gpus) {
     Resource resource = Records.newRecord(Resource.class);
     resource.setMemory(memory);
     resource.setVirtualCores(cores);
+    resource.setGpus(gpus);
     return resource;
   }
 
@@ -137,12 +142,13 @@ public class Resources {
   }
 
   public static Resource clone(Resource res) {
-    return createResource(res.getMemory(), res.getVirtualCores());
+    return createResource(res.getMemory(), res.getVirtualCores(), res.getGpus());
   }
 
   public static Resource addTo(Resource lhs, Resource rhs) {
     lhs.setMemory(lhs.getMemory() + rhs.getMemory());
     lhs.setVirtualCores(lhs.getVirtualCores() + rhs.getVirtualCores());
+    lhs.setGpus(lhs.getGpus() + rhs.getGpus());
     return lhs;
   }
 
@@ -153,6 +159,7 @@ public class Resources {
   public static Resource subtractFrom(Resource lhs, Resource rhs) {
     lhs.setMemory(lhs.getMemory() - rhs.getMemory());
     lhs.setVirtualCores(lhs.getVirtualCores() - rhs.getVirtualCores());
+    lhs.setGpus(lhs.getGpus() - rhs.getGpus());
     return lhs;
   }
 
@@ -167,6 +174,7 @@ public class Resources {
   public static Resource multiplyTo(Resource lhs, double by) {
     lhs.setMemory((int)(lhs.getMemory() * by));
     lhs.setVirtualCores((int)(lhs.getVirtualCores() * by));
+    lhs.setGpus((int)(lhs.getGpus() * by));
     return lhs;
   }
 

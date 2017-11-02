@@ -65,7 +65,7 @@ message GpuProto {
 message ResourceProto {
   optional int32 memory = 1;
   optional int32 virtual_cores = 2;
-  repeated GpuProto gpus = 3;
+  optional int32 gpus = 3;
 }
 
 message ResourceOptionProto {
