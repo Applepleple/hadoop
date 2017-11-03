@@ -73,6 +73,9 @@ public class MetricsOverviewTable extends HtmlBlock {
         th().$class("ui-state-default")._("VCores Used")._().
         th().$class("ui-state-default")._("VCores Total")._().
         th().$class("ui-state-default")._("VCores Reserved")._().
+        th().$class("ui-state-default")._("Gpu Used")._().
+        th().$class("ui-state-default")._("Gpu Total")._().
+        th().$class("ui-state-default")._("Gpu Reserved")._().
         th().$class("ui-state-default")._("Active Nodes")._().
         th().$class("ui-state-default")._("Decommissioned Nodes")._().
         th().$class("ui-state-default")._("Lost Nodes")._().
@@ -98,6 +101,9 @@ public class MetricsOverviewTable extends HtmlBlock {
         td(String.valueOf(clusterMetrics.getAllocatedVirtualCores())).
         td(String.valueOf(clusterMetrics.getTotalVirtualCores())).
         td(String.valueOf(clusterMetrics.getReservedVirtualCores())).
+        td(String.valueOf(clusterMetrics.getAllocatedGpus())).
+        td(String.valueOf(clusterMetrics.getTotalGpus())).
+        td(String.valueOf(clusterMetrics.getReservedGpus())).
         td().a(url("nodes"),String.valueOf(clusterMetrics.getActiveNodes()))._().
         td().a(url("nodes/decommissioned"),String.valueOf(clusterMetrics.getDecommissionedNodes()))._().
         td().a(url("nodes/lost"),String.valueOf(clusterMetrics.getLostNodes()))._().
@@ -127,6 +133,9 @@ public class MetricsOverviewTable extends HtmlBlock {
             th().$class("ui-state-default")._("VCores Used")._().
             th().$class("ui-state-default")._("VCores Pending")._().
             th().$class("ui-state-default")._("VCores Reserved")._().
+            th().$class("ui-state-default")._("Gpu Used")._().
+            th().$class("ui-state-default")._("Gpu Pending")._().
+            th().$class("ui-state-default")._("Gpu Reserved")._().
           _().
         _().
         tbody().$class("ui-widget-content").
@@ -149,13 +158,16 @@ public class MetricsOverviewTable extends HtmlBlock {
             td(String.valueOf(userMetrics.getAllocatedVirtualCores())).
             td(String.valueOf(userMetrics.getPendingVirtualCores())).
             td(String.valueOf(userMetrics.getReservedVirtualCores())).
+            td(String.valueOf(userMetrics.getAllocatedGpus())).
+            td(String.valueOf(userMetrics.getPendingGpus())).
+            td(String.valueOf(userMetrics.getReservedGpus())).
           _().
         _()._();
         
       }
     }
     
-    SchedulerInfo schedulerInfo=new SchedulerInfo(this.rm);
+    SchedulerInfo schedulerInfo = new SchedulerInfo(this.rm);
     
     div.h3("Scheduler Metrics").
     table("#schedulermetricsoverview").

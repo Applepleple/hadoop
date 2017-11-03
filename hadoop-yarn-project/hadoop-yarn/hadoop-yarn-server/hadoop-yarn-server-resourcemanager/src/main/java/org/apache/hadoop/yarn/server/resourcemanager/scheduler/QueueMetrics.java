@@ -323,6 +323,7 @@ public class QueueMetrics implements MetricsSource {
   public void setAvailableResourcesToQueue(Resource limit) {
     availableMB.set(limit.getMemory());
     availableVCores.set(limit.getVirtualCores());
+    availableGpus.set(limit.getGpus());
   }
 
   /**
@@ -509,7 +510,7 @@ public class QueueMetrics implements MetricsSource {
     return allocatedVCores.value();
   }
 
-  public int getAllocatedGpu() {
+  public int getAllocatedGpus() {
     return allocatedGpus.value();
   }
 

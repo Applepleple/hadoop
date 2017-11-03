@@ -140,4 +140,13 @@ public abstract class Resource implements Comparable<Resource> {
   @Evolving
   public abstract void setGpus(int gpus);
 
+
+  @Override
+  public String toString() {
+    return "Resource:" +
+        " memory=" + getMemory() + "," +
+        " vcores=" + getVirtualCores() + "," +
+        " gpus=" + getGpus();
+  }
+
 }
