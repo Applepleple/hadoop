@@ -30,19 +30,7 @@ import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.security.authorize.AccessControlList;
-import org.apache.hadoop.yarn.api.records.ApplicationAttemptId;
-import org.apache.hadoop.yarn.api.records.ApplicationId;
-import org.apache.hadoop.yarn.api.records.Container;
-import org.apache.hadoop.yarn.api.records.ContainerId;
-import org.apache.hadoop.yarn.api.records.ContainerStatus;
-import org.apache.hadoop.yarn.api.records.NodeId;
-import org.apache.hadoop.yarn.api.records.Priority;
-import org.apache.hadoop.yarn.api.records.QueueACL;
-import org.apache.hadoop.yarn.api.records.QueueInfo;
-import org.apache.hadoop.yarn.api.records.QueueState;
-import org.apache.hadoop.yarn.api.records.QueueUserACLInfo;
-import org.apache.hadoop.yarn.api.records.Resource;
-import org.apache.hadoop.yarn.api.records.ResourceRequest;
+import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnRuntimeException;
 import org.apache.hadoop.yarn.factories.RecordFactory;
@@ -672,8 +660,8 @@ public class GpuFifoScheduler extends
 
     int availableMemorySlots =
         node.getAvailableResource().getMemory() / capability.getMemory();
-    int availableGpuSlots = (capability.getGpus() == 0) ? Integer.MAX_VALUE :
-        node.getAvailableResource().getGpus() / capability.getGpus();
+    int availableGpuSlots = (capability.getGpuNum() == 0) ? Integer.MAX_VALUE :
+        node.getAvailableResource().getGpuNum() / capability.getGpuNum();
 
     LOG.debug("availableMemorySlots=" + availableMemorySlots +
         " availableGpuSlots=" + availableGpuSlots);
@@ -695,6 +683,16 @@ public class GpuFifoScheduler extends
         NodeId nodeId = node.getRMNode().getNodeID();
         ContainerId containerId = BuilderUtils.newContainerId(application
             .getApplicationAttemptId(), application.getNewContainerId());
+
+        // Allocate available gpus
+        int requestGpuNum = capability.getGpuNum();
+        List<Gpu> gpuListOnNode = node.getAvailableResource().getGpus();
+        List<Gpu> allocatedGpuList = new ArrayList<>();
+        for (int j = 0; j < requestGpuNum; j++) {
+          if (gpuListOnNode.size() > j)
+            allocatedGpuList.add(gpuListOnNode.get(j));
+        }
+        capability.setGpus(allocatedGpuList);
 
         // Create the container
         Container container =

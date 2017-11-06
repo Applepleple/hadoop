@@ -9,7 +9,7 @@ public class GpuResourceCalculator extends ResourceCalculator {
 
   @Override
   public int compare(Resource clusterResource, Resource lhs, Resource rhs) {
-    return lhs.getGpus() - rhs.getGpus();
+    return lhs.getGpuNum() - rhs.getGpuNum();
   }
 
   /**
@@ -22,7 +22,7 @@ public class GpuResourceCalculator extends ResourceCalculator {
    */
   @Override
   public int computeAvailableContainers(Resource available, Resource required) {
-    return available.getGpus() / required.getGpus();
+    return available.getGpuNum() / required.getGpuNum();
   }
 
   /**
@@ -118,7 +118,7 @@ public class GpuResourceCalculator extends ResourceCalculator {
    */
   @Override
   public boolean isInvalidDivisor(Resource r) {
-    if (r.getGpus() == 0.0f) {
+    if (r.getGpuNum() == 0.0f) {
       return true;
     }
     return false;
@@ -133,7 +133,7 @@ public class GpuResourceCalculator extends ResourceCalculator {
    */
   @Override
   public float ratio(Resource a, Resource b) {
-    return (float)a.getGpus() / b.getGpus();
+    return (float)a.getGpuNum() / b.getGpuNum();
   }
 
   /**

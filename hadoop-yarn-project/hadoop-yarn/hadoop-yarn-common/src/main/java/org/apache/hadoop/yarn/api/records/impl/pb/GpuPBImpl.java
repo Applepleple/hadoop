@@ -37,15 +37,27 @@ public class GpuPBImpl extends Gpu {
   }
 
   @Override
-  public void setId(int id) {
+  public void setId(String id) {
     maybeInitBuilder();
     builder.setId(id);
   }
 
   @Override
-  public int getId() {
+  public String getId() {
     GpuProtoOrBuilder p = viaProto ? proto : builder;
     return p.getId();
+  }
+
+  @Override
+  public void setIndex(int index) {
+    maybeInitBuilder();
+    builder.setIndex(index);
+  }
+
+  @Override
+  public int getIndex() {
+    GpuProtoOrBuilder p = viaProto ? proto : builder;
+    return p.getIndex();
   }
 
   @Override
@@ -107,10 +119,4 @@ public class GpuPBImpl extends Gpu {
     return builder.getUtilizationGpu();
   }
 
-  @Override
-  public String toString() {
-    return this.getName() + StringUtils.COMMA_STR + this.getUsedMemoryInMb() + "/"
-        + this.getFreeMemoryInMb() + "/" + this.getTotalMemoryInMb() + StringUtils.COMMA_STR
-        + this.getUtilizationGpu() + "%";
-  }
 }

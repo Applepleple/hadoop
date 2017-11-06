@@ -616,11 +616,11 @@ public abstract class AbstractYarnScheduler
           maximumAllocation.setVirtualCores(Math.min(
               configuredMaximumAllocation.getVirtualCores(), maxNodeVCores));
         }
-        int nodeGpus = totalResource.getGpus();
+        int nodeGpus = totalResource.getGpuNum();
         if (nodeGpus > maxNodeGpus) {
           maxNodeGpus = nodeGpus;
-          maximumAllocation.setGpus(Math.min(
-              configuredMaximumAllocation.getGpus(), maxNodeGpus));
+          maximumAllocation.setGpuNum(Math.min(
+              configuredMaximumAllocation.getGpuNum(), maxNodeGpus));
         }
       } else {  // removed node
         if (maxNodeMemory == totalResource.getMemory()) {
@@ -629,7 +629,7 @@ public abstract class AbstractYarnScheduler
         if (maxNodeVCores == totalResource.getVirtualCores()) {
           maxNodeVCores = -1;
         }
-        if (maxNodeGpus == totalResource.getGpus()) {
+        if (maxNodeGpus == totalResource.getGpuNum()) {
           maxNodeGpus = -1;
         }
         // We only have to iterate through the nodes if the current max memory
@@ -647,7 +647,7 @@ public abstract class AbstractYarnScheduler
               maxNodeVCores = nodeVCores;
             }
             int nodeGpus =
-                nodeEntry.getValue().getTotalResource().getGpus();
+                nodeEntry.getValue().getTotalResource().getGpuNum();
             if (nodeGpus > maxNodeGpus) {
               maxNodeGpus = nodeGpus;
             }
@@ -665,10 +665,10 @@ public abstract class AbstractYarnScheduler
                 Math.min(configuredMaximumAllocation.getVirtualCores(), maxNodeVCores));
           }
           if (maxNodeGpus == -1) {  // no nodes
-            maximumAllocation.setGpus(configuredMaximumAllocation.getGpus());
+            maximumAllocation.setGpuNum(configuredMaximumAllocation.getGpuNum());
           } else {
-            maximumAllocation.setGpus(
-                Math.min(configuredMaximumAllocation.getGpus(), maxNodeGpus));
+            maximumAllocation.setGpuNum(
+                Math.min(configuredMaximumAllocation.getGpuNum(), maxNodeGpus));
           }
         }
       }
@@ -689,7 +689,7 @@ public abstract class AbstractYarnScheduler
       if (maxNodeVCores != -1) {
         maxVcores = Math.min(maxVcores, maxNodeVCores);
       }
-      int maxGpus = newMaxAlloc.getGpus();
+      int maxGpus = newMaxAlloc.getGpuNum();
       if (maxNodeGpus != -1) {
         maxGpus = Math.min(maxGpus, maxNodeGpus);
       }

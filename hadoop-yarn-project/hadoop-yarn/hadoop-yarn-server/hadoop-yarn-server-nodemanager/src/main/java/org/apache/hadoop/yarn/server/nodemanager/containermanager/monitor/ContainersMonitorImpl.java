@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -130,9 +131,16 @@ public class ContainersMonitorImpl extends AbstractService implements
     long configuredVCoresForContainers = conf.getLong(
         YarnConfiguration.NM_VCORES,
         YarnConfiguration.DEFAULT_NM_VCORES);
-    long configuredGpusForContainers = conf.getLong(
-        YarnConfiguration.NM_GPU_NUMBER,
-        YarnConfiguration.DEFAULT_NM_GPU_NUMBER);
+
+    long configuredGpusForContainers = 0;
+    String gpuIdListString = conf.get(
+            YarnConfiguration.NM_GPU_LIST, YarnConfiguration.DEFAULT_NM_GPU_LIST);
+    if (!StringUtils.isEmpty(gpuIdListString)) {
+      if (gpuIdListString.contains(org.apache.hadoop.util.StringUtils.COMMA_STR)) {
+        String[] gpuIds = gpuIdListString.split(org.apache.hadoop.util.StringUtils.COMMA_STR);
+        configuredGpusForContainers = gpuIds.length;
+      }
+    }
 
     // Setting these irrespective of whether checks are enabled. Required in
     // the UI.

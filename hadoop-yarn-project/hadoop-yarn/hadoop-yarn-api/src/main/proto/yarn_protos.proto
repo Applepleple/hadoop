@@ -54,18 +54,20 @@ message ContainerIdProto {
 }
 
 message GpuProto {
-  optional int32 id = 1;
-  optional string name = 2;
-  optional int32 total_memory_in_mb = 3;
-  optional int32 used_memory_in_mb = 4;
-  optional int32 free_memory_in_mb = 5;
-  optional int32 utilization_gpu = 6;
+  optional string id = 1;
+  optional int32 index = 2;
+  optional string name = 3;
+  optional int32 total_memory_in_mb = 4;
+  optional int32 used_memory_in_mb = 5;
+  optional int32 free_memory_in_mb = 6;
+  optional int32 utilization_gpu = 7;
 }
 
 message ResourceProto {
   optional int32 memory = 1;
   optional int32 virtual_cores = 2;
-  optional int32 gpus = 3;
+  optional int32 gpu_num = 3;
+  repeated GpuProto gpus = 4;
 }
 
 message ResourceOptionProto {

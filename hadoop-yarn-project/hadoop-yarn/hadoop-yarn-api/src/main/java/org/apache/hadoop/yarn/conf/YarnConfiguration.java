@@ -819,9 +819,9 @@ public class YarnConfiguration extends Configuration {
   public static final String YARN_TRACKING_URL_GENERATOR = 
       YARN_PREFIX + "tracking.url.generator";
 
-  /** The number of GPUs that can be allocated for containers.*/
-  public static final String NM_GPU_NUMBER = NM_PREFIX + "resource.gpu-number";
-  public static final int DEFAULT_NM_GPU_NUMBER = 0;
+  /** The indexes of GPUs that can be allocated for containers.*/
+  public static final String NM_GPU_LIST = NM_PREFIX + "resource.gpus";
+  public static final String DEFAULT_NM_GPU_LIST = "";
 
   /** Amount of memory in MB that can be allocated for containers.*/
   public static final String NM_PMEM_MB = NM_PREFIX + "resource.memory-mb";

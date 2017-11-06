@@ -58,16 +58,23 @@ public abstract class Resource implements Comparable<Resource> {
   @Public
   @Stable
   public static Resource newInstance(int memory, int vCores) {
-    return newInstance(memory, vCores, 0);
+    return newInstance(memory, vCores, new ArrayList<Gpu>());
   }
 
   @Public
   @Unstable
-  public static Resource newInstance(int memory, int vCores, int gpus) {
+  public static Resource newInstance(int memory, int vCores, List<Gpu> gpus) {
+    return newInstance(memory, vCores, gpus, gpus.size());
+  }
+
+  @Public
+  @Unstable
+  public static Resource newInstance(int memory, int vCores, List<Gpu> gpus, int gpuNum) {
     Resource resource = Records.newRecord(Resource.class);
     resource.setMemory(memory);
     resource.setVirtualCores(vCores);
     resource.setGpus(gpus);
+    resource.setGpuNum(gpuNum);
     return resource;
   }
 
@@ -126,10 +133,34 @@ public abstract class Resource implements Comparable<Resource> {
    */
   @Public
   @Evolving
-  public abstract int getGpus();
+  public abstract int getGpuNum();
 
   /**
    * Set <em>the number of gpu</em> of the resource.
+   *
+   * GPU is a new computing unit with massive computing cores. It could be used
+   * to accelerate a lot of apps.
+   *
+   * @param gpuNum <em>the number of gpu </em> of the resource
+   */
+  @Public
+  @Evolving
+  public abstract void setGpuNum(int gpuNum);
+
+  /**
+   * Get <em>list of gpus</em> of the resource.
+   *
+   * GPU is a new computing unit with massive computing cores. It could be used
+   * to accelerate a lot of apps.
+   *
+   * @return <em>the number of gpu </em> of the resource
+   */
+  @Public
+  @Evolving
+  public abstract List<Gpu> getGpus();
+
+  /**
+   * Set <em>list of gpus</em> of the resource.
    *
    * GPU is a new computing unit with massive computing cores. It could be used
    * to accelerate a lot of apps.
@@ -138,15 +169,20 @@ public abstract class Resource implements Comparable<Resource> {
    */
   @Public
   @Evolving
-  public abstract void setGpus(int gpus);
-
+  public abstract void setGpus(List<Gpu> gpus);
 
   @Override
   public String toString() {
-    return "Resource:" +
+    StringBuilder stringBuilder = new StringBuilder("Resource:" +
         " memory=" + getMemory() + "," +
         " vcores=" + getVirtualCores() + "," +
-        " gpus=" + getGpus();
+        " gpus=");
+    for (Gpu gpu : getGpus()) {
+      stringBuilder.append(gpu.toString() + " ");
+    }
+    stringBuilder.append("," +
+        " gpuNum=" + getGpuNum());
+    return stringBuilder.toString();
   }
 
 }

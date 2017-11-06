@@ -107,8 +107,8 @@ public class NodeManagerMetrics {
     availableGB.set((int)Math.floor(availableMB/1024d));
     allocatedVCores.incr(res.getVirtualCores());
     availableVCores.decr(res.getVirtualCores());
-    allocatedGpuNum.incr(res.getGpus());
-    availableGpuNum.decr(res.getGpus());
+    allocatedGpuNum.incr(res.getGpuNum());
+    availableGpuNum.decr(res.getGpuNum());
   }
 
   public void releaseContainer(Resource res) {
@@ -119,15 +119,15 @@ public class NodeManagerMetrics {
     availableGB.set((int)Math.floor(availableMB/1024d));
     allocatedVCores.decr(res.getVirtualCores());
     availableVCores.incr(res.getVirtualCores());
-    allocatedGpuNum.decr(res.getGpus());
-    availableGpuNum.incr(res.getGpus());
+    allocatedGpuNum.decr(res.getGpuNum());
+    availableGpuNum.incr(res.getGpuNum());
   }
 
   public void addResource(Resource res) {
     availableMB = availableMB + res.getMemory();
     availableGB.incr((int)Math.floor(availableMB/1024d));
     availableVCores.incr(res.getVirtualCores());
-    availableGpuNum.incr(res.getGpus());
+    availableGpuNum.incr(res.getGpuNum());
   }
 
   public void addContainerLaunchDuration(long value) {

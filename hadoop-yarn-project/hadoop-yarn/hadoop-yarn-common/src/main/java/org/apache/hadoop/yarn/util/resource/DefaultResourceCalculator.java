@@ -59,7 +59,7 @@ public class DefaultResourceCalculator extends ResourceCalculator {
   public Resource divideAndCeil(Resource numerator, int denominator) {
     return Resources.createResource(
         divideAndCeil(numerator.getMemory(), denominator), numerator.getVirtualCores(),
-        numerator.getGpus());
+        numerator.getGpuNum());
   }
 
   @Override
@@ -70,7 +70,7 @@ public class DefaultResourceCalculator extends ResourceCalculator {
             Math.max(r.getMemory(), minimumResource.getMemory()),
             stepFactor.getMemory()),
             maximumResource.getMemory());
-    return Resources.createResource(normalizedMemory, r.getVirtualCores(), r.getGpus());
+    return Resources.createResource(normalizedMemory, r.getVirtualCores(), r.getGpuNum());
   }
 
   @Override
@@ -83,14 +83,14 @@ public class DefaultResourceCalculator extends ResourceCalculator {
   public Resource roundUp(Resource r, Resource stepFactor) {
     return Resources.createResource(
         roundUp(r.getMemory(), stepFactor.getMemory()), r.getVirtualCores(),
-        r.getGpus());
+        r.getGpuNum());
   }
 
   @Override
   public Resource roundDown(Resource r, Resource stepFactor) {
     return Resources.createResource(
         roundDown(r.getMemory(), stepFactor.getMemory()), r.getVirtualCores(),
-        r.getGpus());
+        r.getGpuNum());
   }
 
   @Override
@@ -98,7 +98,7 @@ public class DefaultResourceCalculator extends ResourceCalculator {
       Resource stepFactor) {
     return Resources.createResource(
         roundUp((int)(r.getMemory() * by + 0.5), stepFactor.getMemory()),
-        r.getVirtualCores(), r.getGpus()
+        r.getVirtualCores(), r.getGpuNum()
         );
   }
 
@@ -110,7 +110,7 @@ public class DefaultResourceCalculator extends ResourceCalculator {
             (int)(r.getMemory() * by), 
             stepFactor.getMemory()
             ),
-        r.getVirtualCores(), r.getGpus()
+        r.getVirtualCores(), r.getGpuNum()
         );
   }
 

@@ -42,6 +42,7 @@ import org.apache.hadoop.ipc.RPC;
 import org.apache.hadoop.security.Credentials;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.service.AbstractService;
+import org.apache.hadoop.util.StringUtils;
 import org.apache.hadoop.util.VersionUtil;
 import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
@@ -69,6 +70,7 @@ import org.apache.hadoop.yarn.util.Nvml;
 import org.apache.hadoop.yarn.util.YarnVersionInfo;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.omg.CORBA.INTERNAL;
 
 public class NodeStatusUpdaterImpl extends AbstractService implements
     NodeStatusUpdater {
@@ -144,18 +146,33 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
         conf.getInt(
             YarnConfiguration.NM_VCORES, YarnConfiguration.DEFAULT_NM_VCORES);
 
-    int gpuNum =
-        conf.getInt(
-            YarnConfiguration.NM_GPU_NUMBER, YarnConfiguration.DEFAULT_NM_GPU_NUMBER);
+    String gpuIdListString =
+        conf.get(
+            YarnConfiguration.NM_GPU_LIST, YarnConfiguration.DEFAULT_NM_GPU_LIST);
+    List<Gpu> gpuList = null;
+    if (!org.apache.commons.lang.StringUtils.isEmpty(gpuIdListString)) {
+      gpuList = new ArrayList<>();
+      List<Gpu> totalGpuList = new Nvml().getGpuList();
 
-    int totalGpuNum = new Nvml().getGpuList().size();
-    if (totalGpuNum < gpuNum) {
-      String message = "Invalid configuration for " +
-          YarnConfiguration.NM_GPU_NUMBER + " The total gpu num is " + totalGpuNum;
-      LOG.error(message);
-      throw new YarnException(message);
+      try {
+        if (gpuIdListString.contains(StringUtils.COMMA_STR)) {
+          String[] gpuIds = gpuIdListString.split(StringUtils.COMMA_STR);
+          for (String gpuId : gpuIds) {
+            gpuList.add(totalGpuList.get(Integer.parseInt(gpuId)));
+          }
+        } else {
+          gpuList.add(totalGpuList.get(Integer.parseInt(gpuIdListString)));
+        }
+      } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+        String message = "Invalid gpus configuration for " +
+            YarnConfiguration.NM_GPU_LIST + ". " + e;
+        LOG.error(message);
+        throw new YarnException(message);
+      }
     }
-    this.totalResource = Resource.newInstance(memoryMb, virtualCores, gpuNum);
+
+    this.totalResource = Resource.newInstance(memoryMb, virtualCores, gpuList);
+    LOG.info("Nodemanager total resource is " + totalResource);
     metrics.addResource(totalResource);
     this.tokenKeepAliveEnabled = isTokenKeepAliveEnabled(conf);
     this.tokenRemovalDelayMs =

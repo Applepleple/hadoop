@@ -11,11 +11,12 @@ public abstract class Gpu {
 
   @Public
   @Stable
-  public static Gpu newInstance(int id, String name, int totalMemoryInMb,
+  public static Gpu newInstance(String id, int index, String name, int totalMemoryInMb,
                                 int usedMemoryInMb, int freeMemoryInMb,
                                 int utilizationGpu) {
     Gpu gpu = Records.newRecord(Gpu.class);
     gpu.setId(id);
+    gpu.setIndex(index);
     gpu.setName(name);
     gpu.setTotalMemoryInMb(totalMemoryInMb);
     gpu.setUsedMemoryInMb(usedMemoryInMb);
@@ -26,11 +27,19 @@ public abstract class Gpu {
 
   @Public
   @Unstable
-  public abstract void setId(int id);
+  public abstract void setId(String id);
 
   @Public
   @Unstable
-  public abstract int getId();
+  public abstract String getId();
+
+  @Public
+  @Unstable
+  public abstract void setIndex(int index);
+
+  @Public
+  @Unstable
+  public abstract int getIndex();
 
   @Public
   @Unstable
@@ -72,4 +81,16 @@ public abstract class Gpu {
   @Unstable
   public abstract int getUtilizationGpu();
 
+  @Override
+  public boolean equals(Object gpu) {
+    return gpu != null &&
+        gpu instanceof Gpu &&
+        getId().equals(((Gpu)gpu).getId());
+  }
+
+  @Override
+  public String toString() {
+    return "Gpu: id=" + getId() +
+        " index=" + getIndex() + " name=" + getName();
+  }
 }

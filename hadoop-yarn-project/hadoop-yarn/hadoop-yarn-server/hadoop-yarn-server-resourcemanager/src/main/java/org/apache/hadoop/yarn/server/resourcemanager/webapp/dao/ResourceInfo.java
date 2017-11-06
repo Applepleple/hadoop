@@ -37,7 +37,7 @@ public class ResourceInfo {
   public ResourceInfo(Resource res) {
     memory = res.getMemory();
     vCores = res.getVirtualCores();
-    gpus = res.getGpus();
+    gpus = res.getGpuNum();
   }
 
   public int getMemory() {

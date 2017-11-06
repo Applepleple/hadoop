@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * This class is used to get gpu-related information by "nvidia-smi".
@@ -82,8 +83,8 @@ public class Nvml extends Shell {
       while (!StringUtils.isEmpty(line = lines.readLine())) {
         LOG.debug("Nvml output: " + line);
         String[] infos = line.split(COMMA);
-        Gpu gpu = Gpu.newInstance(Integer.parseInt(infos[0].trim()), infos[1].trim(),
-            Integer.parseInt(infos[2].trim()), Integer.parseInt(infos[3].trim()),
+        Gpu gpu = Gpu.newInstance(UUID.randomUUID().toString(), Integer.parseInt(infos[0].trim()),
+            infos[1].trim(), Integer.parseInt(infos[2].trim()), Integer.parseInt(infos[3].trim()),
             Integer.parseInt(infos[4].trim()), Integer.parseInt(infos[5].trim()));
         gpus.add(gpu);
       }

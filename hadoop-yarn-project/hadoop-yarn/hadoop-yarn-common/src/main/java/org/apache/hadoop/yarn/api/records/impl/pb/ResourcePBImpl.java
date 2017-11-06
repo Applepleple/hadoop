@@ -23,9 +23,9 @@ import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
 import org.apache.hadoop.yarn.api.records.Gpu;
 import org.apache.hadoop.yarn.api.records.Resource;
+import org.apache.hadoop.yarn.proto.YarnProtos.GpuProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.ResourceProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.ResourceProtoOrBuilder;
-import org.apache.hadoop.yarn.proto.YarnProtos.GpuProto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,9 +49,36 @@ public class ResourcePBImpl extends Resource {
   }
   
   public ResourceProto getProto() {
+    mergeLocalToProto();
     proto = viaProto ? proto : builder.build();
     viaProto = true;
     return proto;
+  }
+
+  private void mergeLocalToProto() {
+    if (viaProto)
+      maybeInitBuilder();
+    mergeLocalToBuilder();
+    proto = builder.build();
+    viaProto = true;
+  }
+
+  private void mergeLocalToBuilder() {
+    if (this.gpus != null) {
+      addLocalGpusToProto();
+    }
+  }
+
+  private void addLocalGpusToProto() {
+    maybeInitBuilder();
+    builder.clearGpus();
+    if (this.gpus == null)
+      return;
+    List<GpuProto> protoList = new ArrayList<>();
+    for (Gpu id : gpus) {
+      protoList.add(convertToProtoFormat(id));
+    }
+    builder.addAllGpus(protoList);
   }
 
   private void maybeInitBuilder() {
@@ -85,17 +112,64 @@ public class ResourcePBImpl extends Resource {
     builder.setVirtualCores((vCores));
   }
 
+  /**
+   * Get <em>the number of gpu</em> of the resource.
+   * <p>
+   * GPU is a new computing unit with massive computing cores. It could be used
+   * to accelerate a lot of apps.
+   *
+   * @return <em>the number of gpu </em> of the resource
+   */
   @Override
-  public int getGpus() {
+  public int getGpuNum() {
     ResourceProtoOrBuilder p = viaProto ? proto : builder;
-    return (p.getGpus());
+    return (p.getGpuNum());
   }
 
+  /**
+   * Set <em>the number of gpu</em> of the resource.
+   * <p>
+   * GPU is a new computing unit with massive computing cores. It could be used
+   * to accelerate a lot of apps.
+   *
+   * @param gpuNum
+   */
   @Override
-  public void setGpus(int gpus) {
+  public void setGpuNum(int gpuNum) {
     maybeInitBuilder();
-    builder.setGpus((gpus));
+    builder.setGpuNum((gpuNum));
   }
+
+  /**
+   * Get <em>list of gpus</em> of the resource.
+   * <p>
+   * GPU is a new computing unit with massive computing cores. It could be used
+   * to accelerate a lot of apps.
+   *
+   * @return <em>the number of gpu </em> of the resource
+   */
+  @Override
+  public List<Gpu> getGpus() {
+    initGpuList();
+    return gpus;
+  }
+
+  /**
+   * Set <em>list of gpus</em> of the resource.
+   * <p>
+   * GPU is a new computing unit with massive computing cores. It could be used
+   * to accelerate a lot of apps.
+   *
+   * @param gpus <em>the number of gpu </em> of the resource
+   */
+  @Override
+  public void setGpus(List<Gpu> gpus) {
+    if (gpus == null) {
+      builder.clearGpus();
+    }
+    this.gpus = gpus;
+  }
+
 
   @Override
   public int compareTo(Resource other) {
@@ -109,5 +183,22 @@ public class ResourcePBImpl extends Resource {
   private GpuPBImpl convertFromProtoFormat(GpuProto p) {
     return new GpuPBImpl(p);
   }
-  
+
+  private GpuProto convertToProtoFormat(Gpu t) {
+    return ((GpuPBImpl) t).getProto();
+  }
+
+  private void initGpuList() {
+    if (this.gpus != null) {
+      return;
+    }
+    ResourceProtoOrBuilder p = viaProto ? proto : builder;
+    List<GpuProto> list = p.getGpusList();
+    gpus = new ArrayList<Gpu>();
+
+    for (GpuProto gpu : list) {
+      gpus.add(convertFromProtoFormat(gpu));
+    }
+  }
+
 }  

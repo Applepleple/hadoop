@@ -68,8 +68,8 @@ public class NodeInfo {
       this.availMemoryMB = report.getAvailableResource().getMemory();
       this.usedVirtualCores = report.getUsedResource().getVirtualCores();
       this.availableVirtualCores = report.getAvailableResource().getVirtualCores();
-      this.usedGpuNum = report.getUsedResource().getGpus();
-      this.availableGpuNum = report.getAvailableResource().getGpus();
+      this.usedGpuNum = report.getUsedResource().getGpuNum();
+      this.availableGpuNum = report.getAvailableResource().getGpuNum();
     }
     this.id = id.toString();
     this.rack = ni.getRackName();
