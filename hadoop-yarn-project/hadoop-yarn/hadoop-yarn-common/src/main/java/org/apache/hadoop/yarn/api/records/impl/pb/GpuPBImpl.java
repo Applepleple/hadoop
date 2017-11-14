@@ -116,7 +116,8 @@ public class GpuPBImpl extends Gpu {
 
   @Override
   public int getUtilizationGpu() {
-    return builder.getUtilizationGpu();
+    GpuProtoOrBuilder p = viaProto ? proto : builder;
+    return p.getUtilizationGpu();
   }
 
 }

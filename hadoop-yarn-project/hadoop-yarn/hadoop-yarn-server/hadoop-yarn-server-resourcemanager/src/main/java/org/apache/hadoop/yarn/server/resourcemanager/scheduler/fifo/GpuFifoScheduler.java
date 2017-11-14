@@ -689,15 +689,15 @@ public class GpuFifoScheduler extends
         List<Gpu> gpuListOnNode = node.getAvailableResource().getGpus();
         List<Gpu> allocatedGpuList = new ArrayList<>();
         for (int j = 0; j < requestGpuNum; j++) {
-          if (gpuListOnNode.size() > j)
-            allocatedGpuList.add(gpuListOnNode.get(j));
+          allocatedGpuList.add(gpuListOnNode.get(j));
+          LOG.debug("Container " + containerId + " get gpu " + gpuListOnNode.get(j));
         }
         capability.setGpus(allocatedGpuList);
 
         // Create the container
         Container container =
             BuilderUtils.newContainer(containerId, nodeId, node.getRMNode()
-                .getHttpAddress(), capability, priority, null);
+                .getHttpAddress(), Resources.clone(capability), priority, null);
 
         // Allocate!
 

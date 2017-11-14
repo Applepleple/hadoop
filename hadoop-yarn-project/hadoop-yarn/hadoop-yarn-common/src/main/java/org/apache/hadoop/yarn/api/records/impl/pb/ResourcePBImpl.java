@@ -75,8 +75,8 @@ public class ResourcePBImpl extends Resource {
     if (this.gpus == null)
       return;
     List<GpuProto> protoList = new ArrayList<>();
-    for (Gpu id : gpus) {
-      protoList.add(convertToProtoFormat(id));
+    for (Gpu gpu : gpus) {
+      protoList.add(convertToProtoFormat(gpu));
     }
     builder.addAllGpus(protoList);
   }

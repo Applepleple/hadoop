@@ -90,7 +90,6 @@ public abstract class Gpu {
 
   @Override
   public String toString() {
-    return "Gpu: id=" + getId() +
-        " index=" + getIndex() + " name=" + getName();
+    return "Gpu: index=" + getIndex() + " name=" + getName();
   }
 }
