@@ -11,17 +11,11 @@ public abstract class Gpu {
 
   @Public
   @Stable
-  public static Gpu newInstance(String id, int index, String name, int totalMemoryInMb,
-                                int usedMemoryInMb, int freeMemoryInMb,
-                                int utilizationGpu) {
+  public static Gpu newInstance(String id, int index, String name) {
     Gpu gpu = Records.newRecord(Gpu.class);
     gpu.setId(id);
     gpu.setIndex(index);
     gpu.setName(name);
-    gpu.setTotalMemoryInMb(totalMemoryInMb);
-    gpu.setUsedMemoryInMb(usedMemoryInMb);
-    gpu.setFreeMemoryInMb(freeMemoryInMb);
-    gpu.setUtilizationGpu(utilizationGpu);
     return gpu;
   }
 
@@ -48,38 +42,6 @@ public abstract class Gpu {
   @Public
   @Unstable
   public abstract String getName();
-
-  @Public
-  @Unstable
-  public abstract void setTotalMemoryInMb(int totalMemoryInMb);
-
-  @Public
-  @Unstable
-  public abstract int getTotalMemoryInMb();
-
-  @Public
-  @Unstable
-  public abstract void setUsedMemoryInMb(int usedMemoryInMb);
-
-  @Public
-  @Unstable
-  public abstract int getUsedMemoryInMb();
-
-  @Public
-  @Unstable
-  public abstract void setFreeMemoryInMb(int freeMemoryInMb);
-
-  @Public
-  @Unstable
-  public abstract int getFreeMemoryInMb();
-
-  @Public
-  @Unstable
-  public abstract void setUtilizationGpu(int utilizationGpu);
-
-  @Public
-  @Unstable
-  public abstract int getUtilizationGpu();
 
   @Override
   public boolean equals(Object gpu) {

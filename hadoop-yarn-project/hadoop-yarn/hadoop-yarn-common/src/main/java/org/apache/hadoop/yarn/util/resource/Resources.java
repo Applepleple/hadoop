@@ -209,14 +209,7 @@ public class Resources {
     List<Gpu> newGpuList = new ArrayList<>(gpuList.size());
 
     for (Gpu gpu : gpuList) {
-      Gpu newGpu = Records.newRecord(Gpu.class);
-      newGpu.setId(gpu.getId());
-      newGpu.setIndex(gpu.getIndex());
-      newGpu.setName(gpu.getName());
-      newGpu.setTotalMemoryInMb(gpu.getTotalMemoryInMb());
-      newGpu.setUsedMemoryInMb(gpu.getUsedMemoryInMb());
-      newGpu.setFreeMemoryInMb(gpu.getFreeMemoryInMb());
-      newGpu.setUtilizationGpu(gpu.getUtilizationGpu());
+      Gpu newGpu = Gpu.newInstance(gpu.getId(), gpu.getIndex(), gpu.getName());
       newGpuList.add(newGpu);
     }
 

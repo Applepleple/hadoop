@@ -57,10 +57,6 @@ message GpuProto {
   optional string id = 1;
   optional int32 index = 2;
   optional string name = 3;
-  optional int32 total_memory_in_mb = 4;
-  optional int32 used_memory_in_mb = 5;
-  optional int32 free_memory_in_mb = 6;
-  optional int32 utilization_gpu = 7;
 }
 
 message ResourceProto {

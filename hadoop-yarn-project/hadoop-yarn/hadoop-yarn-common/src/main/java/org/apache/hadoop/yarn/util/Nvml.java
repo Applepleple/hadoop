@@ -84,8 +84,7 @@ public class Nvml extends Shell {
         LOG.debug("Nvml output: " + line);
         String[] infos = line.split(COMMA);
         Gpu gpu = Gpu.newInstance(UUID.randomUUID().toString(), Integer.parseInt(infos[0].trim()),
-            infos[1].trim(), Integer.parseInt(infos[2].trim()), Integer.parseInt(infos[3].trim()),
-            Integer.parseInt(infos[4].trim()), Integer.parseInt(infos[5].trim()));
+            infos[1].trim());
         gpus.add(gpu);
       }
     } catch (IndexOutOfBoundsException | NumberFormatException e) {
