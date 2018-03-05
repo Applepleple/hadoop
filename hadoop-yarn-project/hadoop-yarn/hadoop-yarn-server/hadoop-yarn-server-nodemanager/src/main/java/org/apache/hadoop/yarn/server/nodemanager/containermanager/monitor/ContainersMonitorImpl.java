@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -74,7 +75,8 @@ public class ContainersMonitorImpl extends AbstractService implements
   private boolean pmemCheckEnabled;
   private boolean vmemCheckEnabled;
 
-  private long maxVCoresAllottedForContainers;
+  private long maxVCoresAllocatedForContainers;
+  private long maxGpusAllocatedForContainers;
 
   private static final long UNKNOWN_MEMORY_LIMIT = -1L;
   private int nodeCpuPercentageForYARN;
@@ -129,12 +131,22 @@ public class ContainersMonitorImpl extends AbstractService implements
         YarnConfiguration.NM_VCORES,
         YarnConfiguration.DEFAULT_NM_VCORES);
 
+    long configuredGpusForContainers = 0;
+    String gpuIdListString = conf.get(
+            YarnConfiguration.NM_GPU_LIST, YarnConfiguration.DEFAULT_NM_GPU_LIST);
+    if (!StringUtils.isEmpty(gpuIdListString)) {
+      if (gpuIdListString.contains(org.apache.hadoop.util.StringUtils.COMMA_STR)) {
+        String[] gpuIds = gpuIdListString.split(org.apache.hadoop.util.StringUtils.COMMA_STR);
+        configuredGpusForContainers = gpuIds.length;
+      }
+    }
 
     // Setting these irrespective of whether checks are enabled. Required in
     // the UI.
     // ///////// Physical memory configuration //////
     this.maxPmemAllottedForContainers = configuredPMemForContainers;
-    this.maxVCoresAllottedForContainers = configuredVCoresForContainers;
+    this.maxVCoresAllocatedForContainers = configuredVCoresForContainers;
+    this.maxGpusAllocatedForContainers = configuredGpusForContainers;
 
     // ///////// Virtual memory configuration //////
     float vmemRatio = conf.getFloat(YarnConfiguration.NM_VMEM_PMEM_RATIO,
@@ -178,6 +190,7 @@ public class ContainersMonitorImpl extends AbstractService implements
                 1) + "). Thrashing might happen.");
       }
     }
+
     super.serviceInit(conf);
   }
 
@@ -454,7 +467,7 @@ public class ContainersMonitorImpl extends AbstractService implements
 
             // Multiply by 1000 to avoid losing data when converting to int
             int milliVcoresUsed = (int) (cpuUsageTotalCoresPercentage * 1000
-                * maxVCoresAllottedForContainers /nodeCpuPercentageForYARN);
+                * maxVCoresAllocatedForContainers / nodeCpuPercentageForYARN);
             // as processes begin with an age 1, we want to see if there
             // are processes more than 1 iteration old.
             long curMemUsageOfAgedProcesses = pTree.getVirtualMemorySize(1);
@@ -597,7 +610,12 @@ public class ContainersMonitorImpl extends AbstractService implements
 
   @Override
   public long getVCoresAllocatedForContainers() {
-    return this.maxVCoresAllottedForContainers;
+    return this.maxVCoresAllocatedForContainers;
+  }
+
+  @Override
+  public long getGpuAllocatedForContainers() {
+    return this.maxGpusAllocatedForContainers;
   }
 
   /**

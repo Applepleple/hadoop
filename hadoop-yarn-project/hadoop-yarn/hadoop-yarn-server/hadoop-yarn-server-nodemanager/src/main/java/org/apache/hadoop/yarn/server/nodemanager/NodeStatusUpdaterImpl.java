@@ -42,13 +42,9 @@ import org.apache.hadoop.ipc.RPC;
 import org.apache.hadoop.security.Credentials;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.service.AbstractService;
+import org.apache.hadoop.util.StringUtils;
 import org.apache.hadoop.util.VersionUtil;
-import org.apache.hadoop.yarn.api.records.ApplicationId;
-import org.apache.hadoop.yarn.api.records.ContainerId;
-import org.apache.hadoop.yarn.api.records.ContainerState;
-import org.apache.hadoop.yarn.api.records.ContainerStatus;
-import org.apache.hadoop.yarn.api.records.NodeId;
-import org.apache.hadoop.yarn.api.records.Resource;
+import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.event.Dispatcher;
 import org.apache.hadoop.yarn.exceptions.YarnException;
@@ -70,6 +66,7 @@ import org.apache.hadoop.yarn.server.nodemanager.containermanager.ContainerManag
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.application.ApplicationState;
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.container.Container;
 import org.apache.hadoop.yarn.server.nodemanager.metrics.NodeManagerMetrics;
+import org.apache.hadoop.yarn.util.NvidiaSmi;
 import org.apache.hadoop.yarn.util.YarnVersionInfo;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -148,7 +145,33 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
         conf.getInt(
             YarnConfiguration.NM_VCORES, YarnConfiguration.DEFAULT_NM_VCORES);
 
-    this.totalResource = Resource.newInstance(memoryMb, virtualCores);
+    String gpuIdListString =
+        conf.get(
+            YarnConfiguration.NM_GPU_LIST, YarnConfiguration.DEFAULT_NM_GPU_LIST);
+    List<Gpu> gpuList = null;
+    if (!org.apache.commons.lang.StringUtils.isEmpty(gpuIdListString)) {
+      gpuList = new ArrayList<>();
+      List<Gpu> totalGpuList = new NvidiaSmi().getGpuList();
+
+      try {
+        if (gpuIdListString.contains(StringUtils.COMMA_STR)) {
+          String[] gpuIds = gpuIdListString.split(StringUtils.COMMA_STR);
+          for (String gpuId : gpuIds) {
+            gpuList.add(totalGpuList.get(Integer.parseInt(gpuId)));
+          }
+        } else {
+          gpuList.add(totalGpuList.get(Integer.parseInt(gpuIdListString)));
+        }
+      } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+        String message = "Invalid gpus configuration for " +
+            YarnConfiguration.NM_GPU_LIST + ". " + e;
+        LOG.error(message);
+        throw new YarnException(message);
+      }
+    }
+
+    this.totalResource = Resource.newInstance(memoryMb, virtualCores, gpuList);
+    LOG.info("Nodemanager total resource is " + totalResource);
     metrics.addResource(totalResource);
     this.tokenKeepAliveEnabled = isTokenKeepAliveEnabled(conf);
     this.tokenRemovalDelayMs =
@@ -197,7 +220,7 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
       super.serviceStart();
       startStatusUpdater();
     } catch (Exception e) {
-      String errorMessage = "Unexpected error starting NodeStatusUpdater";
+      String errorMessage = "Unexpected error starting NodeStatusUpdatertotal";
       LOG.error(errorMessage, e);
       throw new YarnRuntimeException(e);
     }

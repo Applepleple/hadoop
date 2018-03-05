@@ -20,8 +20,12 @@ package org.apache.hadoop.yarn.util.resource;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
+import org.apache.hadoop.yarn.api.records.Gpu;
 import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.util.Records;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @InterfaceAudience.LimitedPrivate({"YARN", "MapReduce"})
 @Unstable
@@ -47,6 +51,51 @@ public class Resources {
 
     @Override
     public void setVirtualCores(int cores) {
+      throw new RuntimeException("NONE cannot be modified!");
+    }
+
+    /**
+     * Get <em>the number of gpu</em> of the resource.
+     * <p>
+     * GPU is a new computing unit with massive computing cores. It could be used
+     * to accelerate a lot of apps.
+     *
+     * @return <em>the number of gpu </em> of the resource
+     */
+    @Override
+    public int getGpuNum() {
+      return 0;
+    }
+
+    /**
+     * Set <em>the number of gpu</em> of the resource.
+     * <p>
+     * GPU is a new computing unit with massive computing cores. It could be used
+     * to accelerate a lot of apps.
+     *
+     * @param gpuNum
+     * @return <em>the number of gpu </em> of the resource
+     */
+    @Override
+    public void setGpuNum(int gpuNum) {
+      throw new RuntimeException("NONE cannot be modified!");
+    }
+
+    @Override
+    public List<Gpu> getGpus() {
+      return new ArrayList<>();
+    }
+
+    /**
+     * Set <em>list of gpus</em> of the resource.
+     * <p>
+     * GPU is a new computing unit with massive computing cores. It could be used
+     * to accelerate a lot of apps.
+     *
+     * @param gpus <em>the number of gpu </em> of the resource
+     */
+    @Override
+    public void setGpus(List<Gpu> gpus) {
       throw new RuntimeException("NONE cannot be modified!");
     }
 
@@ -83,6 +132,51 @@ public class Resources {
       throw new RuntimeException("NONE cannot be modified!");
     }
 
+    /**
+     * Get <em>the number of gpu</em> of the resource.
+     * <p>
+     * GPU is a new computing unit with massive computing cores. It could be used
+     * to accelerate a lot of apps.
+     *
+     * @return <em>the number of gpu </em> of the resource
+     */
+    @Override
+    public int getGpuNum() {
+      return Integer.MAX_VALUE;
+    }
+
+    /**
+     * Set <em>the number of gpu</em> of the resource.
+     * <p>
+     * GPU is a new computing unit with massive computing cores. It could be used
+     * to accelerate a lot of apps.
+     *
+     * @param gpuNum
+     * @return <em>the number of gpu </em> of the resource
+     */
+    @Override
+    public void setGpuNum(int gpuNum) {
+      throw new RuntimeException("NONE cannot be modified!");
+    }
+
+    @Override
+    public List<Gpu> getGpus() {
+      return new ArrayList<>();
+    }
+
+    /**
+     * Set <em>list of gpus</em> of the resource.
+     * <p>
+     * GPU is a new computing unit with massive computing cores. It could be used
+     * to accelerate a lot of apps.
+     *
+     * @param gpus <em>the number of gpu </em> of the resource
+     */
+    @Override
+    public void setGpus(List<Gpu> gpus) {
+      throw new RuntimeException("NONE cannot be modified!");
+    }
+
     @Override
     public int compareTo(Resource o) {
       int diff = 0 - o.getMemory();
@@ -99,9 +193,31 @@ public class Resources {
   }
 
   public static Resource createResource(int memory, int cores) {
+    return createResource(memory, cores, new ArrayList<Gpu>());
+  }
+
+  public static Resource createResource(int memory, int cores, int gpuNum) {
+    return createResource(memory, cores, new ArrayList<Gpu>(), gpuNum);
+  }
+
+  public static Resource createResource(int memory, int cores, List<Gpu> gpuList) {
+    return createResource(memory, cores, gpuList, gpuList.size());
+  }
+
+  public static Resource createResource(int memory, int cores, List<Gpu> gpuList, int gpuNum) {
     Resource resource = Records.newRecord(Resource.class);
+    List<Gpu> newGpuList = new ArrayList<>(gpuList.size());
+
+    for (Gpu gpu : gpuList) {
+      Gpu newGpu = Gpu.newInstance(gpu.getId(), gpu.getIndex(), gpu.getName(),
+          gpu.getMaxClockRate(), gpu.getTotalMemory());
+      newGpuList.add(newGpu);
+    }
+
     resource.setMemory(memory);
     resource.setVirtualCores(cores);
+    resource.setGpus(newGpuList);
+    resource.setGpuNum(gpuNum);
     return resource;
   }
 
@@ -114,12 +230,14 @@ public class Resources {
   }
 
   public static Resource clone(Resource res) {
-    return createResource(res.getMemory(), res.getVirtualCores());
+    return createResource(res.getMemory(), res.getVirtualCores(), res.getGpus(), res.getGpuNum());
   }
 
   public static Resource addTo(Resource lhs, Resource rhs) {
     lhs.setMemory(lhs.getMemory() + rhs.getMemory());
     lhs.setVirtualCores(lhs.getVirtualCores() + rhs.getVirtualCores());
+    lhs.getGpus().addAll(rhs.getGpus());
+    lhs.setGpuNum(lhs.getGpuNum() + rhs.getGpuNum());
     return lhs;
   }
 
@@ -130,6 +248,10 @@ public class Resources {
   public static Resource subtractFrom(Resource lhs, Resource rhs) {
     lhs.setMemory(lhs.getMemory() - rhs.getMemory());
     lhs.setVirtualCores(lhs.getVirtualCores() - rhs.getVirtualCores());
+    for (Gpu gpu : rhs.getGpus()) {
+      lhs.getGpus().remove(gpu);
+    }
+    lhs.setGpuNum(lhs.getGpuNum() - rhs.getGpuNum());
     return lhs;
   }
 
@@ -144,6 +266,7 @@ public class Resources {
   public static Resource multiplyTo(Resource lhs, double by) {
     lhs.setMemory((int)(lhs.getMemory() * by));
     lhs.setVirtualCores((int)(lhs.getVirtualCores() * by));
+    lhs.setGpuNum((int)(lhs.getGpuNum() * by));
     return lhs;
   }
 
@@ -165,6 +288,7 @@ public class Resources {
     Resource out = clone(lhs);
     out.setMemory((int)(lhs.getMemory() * by));
     out.setVirtualCores((int)(lhs.getVirtualCores() * by));
+    out.setGpuNum((int)(lhs.getGpuNum() * by));
     return out;
   }
   

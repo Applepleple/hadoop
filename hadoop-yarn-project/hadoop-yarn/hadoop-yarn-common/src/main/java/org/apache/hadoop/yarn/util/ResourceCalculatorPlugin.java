@@ -25,6 +25,8 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.hadoop.util.Shell;
 
+import java.io.IOException;
+
 /**
  * Plugin to calculate resource information on the system.
  *

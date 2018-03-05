@@ -79,6 +79,7 @@ public abstract class SchedulerNode {
       nodeName = rmNode.getHostName();
     }
     this.labels = ImmutableSet.copyOf(labels);
+    printCurrentResource();
   }
 
   public SchedulerNode(RMNode node, boolean usePortForNodeName) {
@@ -194,6 +195,7 @@ public abstract class SchedulerNode {
   private synchronized void updateResource(Container container) {
     addAvailableResource(container.getResource());
     --numContainers;
+    printCurrentResource();
   }
 
   /**
@@ -293,5 +295,12 @@ public abstract class SchedulerNode {
   
   public void updateLabels(Set<String> labels) {
     this.labels = labels;
+  }
+
+  private void printCurrentResource() {
+    LOG.info(" Host " + rmNode.getNodeAddress()
+        + ", currently has " + numContainers + " containers, "
+        + getUsedResource() + " used, " + getAvailableResource()
+        + " available" + " and " + getTotalResource() + " in total.");
   }
 }

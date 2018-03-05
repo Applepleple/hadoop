@@ -99,6 +99,7 @@ public class ResourceTrackerService extends AbstractService implements
   
   private int minAllocMb;
   private int minAllocVcores;
+  // Currently the minimal number of gpu is always 0
 
   static {
     resync.setNodeAction(NodeAction.RESYNC);

@@ -41,7 +41,7 @@ import org.apache.hadoop.classification.InterfaceStability;
  * <code>df</code>. It also offers facilities to gate commands by 
  * time-intervals.
  */
-@InterfaceAudience.LimitedPrivate({"HDFS", "MapReduce"})
+@InterfaceAudience.LimitedPrivate({"HDFS", "MapReduce", "YARN"})
 @InterfaceStability.Unstable
 abstract public class Shell {
   

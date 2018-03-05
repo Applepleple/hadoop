@@ -53,9 +53,19 @@ message ContainerIdProto {
   optional int64 id = 3;
 }
 
+message GpuProto {
+  optional string id = 1;
+  optional int32 index = 2;
+  optional string name = 3;
+  optional int32 max_clock_rate = 4;
+  optional int32 total_memory = 5;
+}
+
 message ResourceProto {
   optional int32 memory = 1;
   optional int32 virtual_cores = 2;
+  optional int32 gpu_num = 3;
+  repeated GpuProto gpus = 4;
 }
 
 message ResourceOptionProto {

@@ -179,6 +179,9 @@ public class YarnConfiguration extends Configuration {
   public static final String RM_SCHEDULER_MAXIMUM_ALLOCATION_VCORES =
       YARN_PREFIX + "scheduler.maximum-allocation-vcores";
   public static final int DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_VCORES = 4;
+  public static final String RM_SCHEDULER_MAXIMUM_ALLOCATION_GPUS =
+      YARN_PREFIX + "scheduler.maximum-allocation-gpus";
+  public static final int DEFAULT_RM_SCHEDULER_MAXIMUM_ALLOCATION_GPUS = 4;
 
   /** Number of threads to handle scheduler interface.*/
   public static final String RM_SCHEDULER_CLIENT_THREAD_COUNT =
@@ -816,7 +819,11 @@ public class YarnConfiguration extends Configuration {
   public static final String YARN_TRACKING_URL_GENERATOR = 
       YARN_PREFIX + "tracking.url.generator";
 
-  /** Amount of memory in GB that can be allocated for containers.*/
+  /** The indexes of GPUs that can be allocated for containers.*/
+  public static final String NM_GPU_LIST = NM_PREFIX + "resource.gpus";
+  public static final String DEFAULT_NM_GPU_LIST = "";
+
+  /** Amount of memory in MB that can be allocated for containers.*/
   public static final String NM_PMEM_MB = NM_PREFIX + "resource.memory-mb";
   public static final int DEFAULT_NM_PMEM_MB = 8 * 1024;
 
@@ -825,7 +832,7 @@ public class YarnConfiguration extends Configuration {
       + "pmem-check-enabled";
   public static final boolean DEFAULT_NM_PMEM_CHECK_ENABLED = true;
 
-  /** Specifies whether physical memory check is enabled. */
+  /** Specifies whether virtual memory check is enabled. */
   public static final String NM_VMEM_CHECK_ENABLED = NM_PREFIX
       + "vmem-check-enabled";
   public static final boolean DEFAULT_NM_VMEM_CHECK_ENABLED = true;
