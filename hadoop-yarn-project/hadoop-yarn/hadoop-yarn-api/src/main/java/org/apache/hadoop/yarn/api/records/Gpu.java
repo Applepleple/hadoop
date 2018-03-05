@@ -11,11 +11,14 @@ public abstract class Gpu {
 
   @Public
   @Stable
-  public static Gpu newInstance(String id, int index, String name) {
+  public static Gpu newInstance(String id, int index, String name,
+                                int maxClockRate, int totalMemory) {
     Gpu gpu = Records.newRecord(Gpu.class);
     gpu.setId(id);
     gpu.setIndex(index);
     gpu.setName(name);
+    gpu.setMaxClockRate(maxClockRate);
+    gpu.setTotalMemory(totalMemory);
     return gpu;
   }
 
@@ -42,6 +45,22 @@ public abstract class Gpu {
   @Public
   @Unstable
   public abstract String getName();
+
+  @Public
+  @Unstable
+  public abstract void setTotalMemory(int totalMemory);
+
+  @Public
+  @Unstable
+  public abstract int getTotalMemory();
+
+  @Public
+  @Unstable
+  public abstract void setMaxClockRate(int maxClockRate);
+
+  @Public
+  @Unstable
+  public abstract int getMaxClockRate();
 
   @Override
   public boolean equals(Object gpu) {

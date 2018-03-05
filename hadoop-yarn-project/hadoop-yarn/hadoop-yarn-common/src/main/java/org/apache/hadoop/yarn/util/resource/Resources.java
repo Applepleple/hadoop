@@ -209,7 +209,8 @@ public class Resources {
     List<Gpu> newGpuList = new ArrayList<>(gpuList.size());
 
     for (Gpu gpu : gpuList) {
-      Gpu newGpu = Gpu.newInstance(gpu.getId(), gpu.getIndex(), gpu.getName());
+      Gpu newGpu = Gpu.newInstance(gpu.getId(), gpu.getIndex(), gpu.getName(),
+          gpu.getMaxClockRate(), gpu.getTotalMemory());
       newGpuList.add(newGpu);
     }
 

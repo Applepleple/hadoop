@@ -57,6 +57,8 @@ message GpuProto {
   optional string id = 1;
   optional int32 index = 2;
   optional string name = 3;
+  optional int32 max_clock_rate = 4;
+  optional int32 total_memory = 5;
 }
 
 message ResourceProto {

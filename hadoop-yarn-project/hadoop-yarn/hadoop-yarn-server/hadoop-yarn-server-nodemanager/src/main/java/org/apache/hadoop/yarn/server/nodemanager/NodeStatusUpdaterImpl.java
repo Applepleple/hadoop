@@ -66,11 +66,10 @@ import org.apache.hadoop.yarn.server.nodemanager.containermanager.ContainerManag
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.application.ApplicationState;
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.container.Container;
 import org.apache.hadoop.yarn.server.nodemanager.metrics.NodeManagerMetrics;
-import org.apache.hadoop.yarn.util.Nvml;
+import org.apache.hadoop.yarn.util.NvidiaSmi;
 import org.apache.hadoop.yarn.util.YarnVersionInfo;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.omg.CORBA.INTERNAL;
 
 public class NodeStatusUpdaterImpl extends AbstractService implements
     NodeStatusUpdater {
@@ -152,7 +151,7 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
     List<Gpu> gpuList = null;
     if (!org.apache.commons.lang.StringUtils.isEmpty(gpuIdListString)) {
       gpuList = new ArrayList<>();
-      List<Gpu> totalGpuList = new Nvml().getGpuList();
+      List<Gpu> totalGpuList = new NvidiaSmi().getGpuList();
 
       try {
         if (gpuIdListString.contains(StringUtils.COMMA_STR)) {

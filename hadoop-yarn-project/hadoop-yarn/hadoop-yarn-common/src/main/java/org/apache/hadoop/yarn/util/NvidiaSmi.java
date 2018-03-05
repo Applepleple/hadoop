@@ -5,7 +5,6 @@ import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.util.Shell;
 import org.apache.hadoop.yarn.api.records.Gpu;
-import org.apache.hadoop.yarn.api.records.impl.pb.GpuPBImpl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +17,7 @@ import java.util.UUID;
  */
 @InterfaceAudience.Private
 @InterfaceStability.Unstable
-public class Nvml extends Shell {
+public class NvidiaSmi extends Shell {
 
   private String NVIDIA_SMI = "nvidia-smi";
 
@@ -30,13 +29,14 @@ public class Nvml extends Shell {
   private static final String QUERY_OPTION_MEMORY_TOTAL = "memory.total";
   private static final String QUERY_OPTION_MEMORY_USED = "memory.used";
   private static final String QUERY_OPTION_MEMORY_FREE = "memory.free";
+  private static final String QUERY_OPTION_SM_MAX_CLOCK_RATE = "clocks.max.sm";
 
   private static final String FORMAT_OPTION_CSV = "csv";
   private static final String FORMAT_OPTION_NOUNITS = "nounits";
 
   private List<Gpu> gpus;
 
-  public Nvml() {
+  public NvidiaSmi() {
     if (Shell.WINDOWS) {
       NVIDIA_SMI = "nvidia-smi.exe";
     }
@@ -52,12 +52,14 @@ public class Nvml extends Shell {
     LOG.debug("Run command : " + NVIDIA_SMI +
         " --query-gpu=" + QUERY_OPTION_ID + COMMA + QUERY_OPTION_NAME + COMMA +
             QUERY_OPTION_UTILIZATION_GPU + COMMA + QUERY_OPTION_MEMORY_TOTAL + COMMA +
-            QUERY_OPTION_MEMORY_USED + COMMA + QUERY_OPTION_MEMORY_FREE +
-        " --format=" + FORMAT_OPTION_CSV + COMMA + FORMAT_OPTION_NOUNITS);
+            QUERY_OPTION_MEMORY_USED + COMMA + QUERY_OPTION_MEMORY_FREE + COMMA +
+            QUERY_OPTION_SM_MAX_CLOCK_RATE +
+            " --format=" + FORMAT_OPTION_CSV + COMMA + FORMAT_OPTION_NOUNITS);
     return new String[]{ NVIDIA_SMI,
         "--query-gpu=" + QUERY_OPTION_ID + COMMA + QUERY_OPTION_NAME + COMMA +
-        QUERY_OPTION_UTILIZATION_GPU + COMMA + QUERY_OPTION_MEMORY_TOTAL + COMMA +
-        QUERY_OPTION_MEMORY_USED + COMMA + QUERY_OPTION_MEMORY_FREE,
+            QUERY_OPTION_UTILIZATION_GPU + COMMA + QUERY_OPTION_MEMORY_TOTAL + COMMA +
+            QUERY_OPTION_MEMORY_USED + COMMA + QUERY_OPTION_MEMORY_FREE + COMMA +
+            QUERY_OPTION_SM_MAX_CLOCK_RATE,
         "--format=" + FORMAT_OPTION_CSV + COMMA + FORMAT_OPTION_NOUNITS };
   }
 
@@ -81,10 +83,10 @@ public class Nvml extends Shell {
 
     try {
       while (!StringUtils.isEmpty(line = lines.readLine())) {
-        LOG.debug("Nvml output: " + line);
+        LOG.debug("NvidiaSmi output: " + line);
         String[] infos = line.split(COMMA);
         Gpu gpu = Gpu.newInstance(UUID.randomUUID().toString(), Integer.parseInt(infos[0].trim()),
-            infos[1].trim());
+            infos[1].trim(), Integer.parseInt(infos[6].trim()), Integer.parseInt(infos[3].trim()));
         gpus.add(gpu);
       }
     } catch (IndexOutOfBoundsException | NumberFormatException e) {
@@ -94,7 +96,7 @@ public class Nvml extends Shell {
 
   public static void main(String args[]) {
     try {
-      List<Gpu> gpus = new Nvml().getGpuList();
+      List<Gpu> gpus = new NvidiaSmi().getGpuList();
 
       for (Gpu gpu : gpus) {
         System.out.print(gpu);

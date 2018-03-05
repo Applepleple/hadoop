@@ -72,4 +72,28 @@ public class GpuPBImpl extends Gpu {
     return p.getName();
   }
 
+  @Override
+  public void setTotalMemory(int totalMemory) {
+    maybeInitBuilder();
+    builder.setTotalMemory(totalMemory);
+  }
+
+  @Override
+  public int getTotalMemory() {
+    GpuProtoOrBuilder p = viaProto ? proto : builder;
+    return p.getTotalMemory();
+  }
+
+  @Override
+  public void setMaxClockRate(int maxClockRate) {
+    maybeInitBuilder();
+    builder.setMaxClockRate(maxClockRate);
+  }
+
+  @Override
+  public int getMaxClockRate() {
+    GpuProtoOrBuilder p = viaProto ? proto : builder;
+    return p.getMaxClockRate();
+  }
+
 }

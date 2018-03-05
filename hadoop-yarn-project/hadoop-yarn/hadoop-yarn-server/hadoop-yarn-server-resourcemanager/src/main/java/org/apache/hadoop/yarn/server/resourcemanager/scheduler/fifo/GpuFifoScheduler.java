@@ -644,6 +644,18 @@ public class GpuFifoScheduler extends
     return assignedContainers;
   }
 
+  private void assignGpusNaive(FiCaSchedulerNode node, ContainerId containerId,
+                               Resource capability) {
+    int requestGpuNum = capability.getGpuNum();
+    List<Gpu> gpuListOnNode = node.getAvailableResource().getGpus();
+    List<Gpu> allocatedGpuList = new ArrayList<>();
+    for (int j = 0; j < requestGpuNum; j++) {
+      allocatedGpuList.add(gpuListOnNode.get(j));
+      LOG.debug("Container " + containerId + " get gpu " + gpuListOnNode.get(j));
+    }
+    capability.setGpus(allocatedGpuList);
+  }
+
   /*
    * Assign containers.
    */
@@ -685,14 +697,7 @@ public class GpuFifoScheduler extends
             .getApplicationAttemptId(), application.getNewContainerId());
 
         // Allocate available gpus
-        int requestGpuNum = capability.getGpuNum();
-        List<Gpu> gpuListOnNode = node.getAvailableResource().getGpus();
-        List<Gpu> allocatedGpuList = new ArrayList<>();
-        for (int j = 0; j < requestGpuNum; j++) {
-          allocatedGpuList.add(gpuListOnNode.get(j));
-          LOG.debug("Container " + containerId + " get gpu " + gpuListOnNode.get(j));
-        }
-        capability.setGpus(allocatedGpuList);
+        assignGpusNaive(node, containerId, capability);
 
         // Create the container
         Container container =
